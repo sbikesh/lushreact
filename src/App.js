@@ -1,28 +1,32 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
+import './BlynkControlApp.css'; // Import CSS file for styling
 
 const BlynkControlApp = () => {
   const [currentPattern, setCurrentPattern] = useState("OFF");
   const [speedMultiplier, setSpeedMultiplier] = useState(1);
   const [isSliderSet, setIsSliderSet] = useState(false);
   const [isDeviceOnline, setIsDeviceOnline] = useState(false);
+  const [buttonText, setButtonText] = useState("Pattern");
+  const [sliderValue, setSliderValue] = useState(0);
 
   const blynkAuthToken = 'uRxhxeAdh9hS0NkU9ix_lqlcpEb-EW7a';
   const blynkServerAddress = 'http://sgp1.blynk.cloud';
-  const baseUrl = `${blynkServerAddress}/external/api/update?token=${blynkAuthToken}`;
+  const getApiUrl = `${blynkServerAddress}/external/api/get?token=${blynkAuthToken}&pin=V5`;
 
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await axios.get(`${baseUrl}&pin=V5`);
-        setCurrentPattern(response.data);
+        const response = await axios.get(getApiUrl);
+        setCurrentPattern(response.data[0]);
+        setButtonText(`Change Pattern (${response.data[0]})`);
       } catch (error) {
         console.error('Error fetching current pattern:', error);
       }
     };
 
     fetchData();
-  }, []);
+  }, [getApiUrl]);
 
   useEffect(() => {
     const fetchDeviceStatus = async () => {
@@ -44,20 +48,17 @@ const BlynkControlApp = () => {
       const nextIndex = (currentIndex + 1) % patterns.length;
       const nextPattern = patterns[nextIndex];
     
-      await axios.get(`${baseUrl}&pin=V1&value=${nextPattern}`);
+      await axios.get(`${blynkServerAddress}/external/api/update?token=${blynkAuthToken}&pin=V1&value=${nextPattern}`);
       setCurrentPattern(nextPattern);
+      setButtonText(`Change Pattern (${nextPattern})`);
     } catch (error) {
       console.error('Error changing pattern:', error);
     }
   };
-  
-  
-
-  
 
   const handleSpeedMultiplierChange = async (multiplier) => {
     try {
-      await axios.get(`${baseUrl}&pin=V${multiplier + 6}&value=${multiplier}`);
+      await axios.get(`${blynkServerAddress}/external/api/update?token=${blynkAuthToken}&pin=V${multiplier + 6}&value=${multiplier}`);
       setSpeedMultiplier(multiplier);
     } catch (error) {
       console.error('Error changing speed multiplier:', error);
@@ -66,8 +67,9 @@ const BlynkControlApp = () => {
 
   const handleSliderChange = async (event) => {
     try {
-      const sliderValue = event.target.value;
-      await axios.get(`${baseUrl}&pin=V0&value=${sliderValue}`);
+      const value = parseInt(event.target.value, 10);
+      setSliderValue(value);
+      await axios.get(`${blynkServerAddress}/external/api/update?token=${blynkAuthToken}&pin=V0&value=${value}`);
       setIsSliderSet(true);
     } catch (error) {
       console.error('Error handling slider change:', error);
@@ -75,30 +77,28 @@ const BlynkControlApp = () => {
   };
 
   return (
-    <div>
+    <div className="centered-container">
       <h1>Blynk Device Control</h1>
-      <div>
+      <div className="centered-container">
         <h2>Device Status:</h2>
-        <div style={{ width: '20px', height: '20px', borderRadius: '50%', backgroundColor: isDeviceOnline ? 'green' : 'red' }}></div>
+        <div className={`status-indicator ${isDeviceOnline ? 'online' : 'offline'}`}></div>
       </div>
 
-      <div>
-        <h2>Pattern: {currentPattern}</h2>
-        <button onClick={changePattern}>Pattern</button>
+      <div className="centered-container">
+        <h2>Change Pattern</h2>
+        <button disabled={sliderValue !== 0} className="change-pattern-button" onClick={changePattern}>{buttonText}</button>
       </div>
 
-      <div>
+      <div className="centered-container">
         <h2>Select Speed</h2>
-        <div>
-          <button style={{ backgroundColor: speedMultiplier === 1 ? 'green' : 'white' }} onClick={() => handleSpeedMultiplierChange(1)}>1x</button>
-          <button style={{ backgroundColor: speedMultiplier === 2 ? 'green' : 'white' }} onClick={() => handleSpeedMultiplierChange(2)}>2x</button>
-          <button style={{ backgroundColor: speedMultiplier === 3 ? 'green' : 'white' }} onClick={() => handleSpeedMultiplierChange(3)}>3x</button>
-          <button style={{ backgroundColor: speedMultiplier === 4 ? 'green' : 'white' }} onClick={() => handleSpeedMultiplierChange(4)}>4x</button>
-          <button style={{ backgroundColor: speedMultiplier === 5 ? 'green' : 'white' }} onClick={() => handleSpeedMultiplierChange(5)}>5x</button>
+        <div className="speed-buttons">
+          {[1, 2, 3, 4, 5].map((value) => (
+            <button key={value} disabled={sliderValue !== 0} className={`speed-button ${speedMultiplier === value ? 'active' : ''}`} onClick={() => handleSpeedMultiplierChange(value)}>{value}x</button>
+          ))}
         </div>
       </div>
 
-      <div>
+      <div className="centered-container">
         <h2>Control</h2>
         <input type="range" min="0" max="1023" onChange={handleSliderChange} />
       </div>
@@ -107,4 +107,3 @@ const BlynkControlApp = () => {
 };
 
 export default BlynkControlApp;
-

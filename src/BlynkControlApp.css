@@ -1,0 +1,55 @@
+.status-indicator {
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+  }
+  
+  .online {
+    background-color: green;
+  }
+  
+  .offline {
+    background-color: red;
+  }
+  
+  .speed-buttons {
+    display: flex;
+  }
+  
+  .speed-button {
+    background-color: white;
+    border: 1px solid #ccc;
+    padding: 5px 10px;
+    margin-right: 5px;
+  }
+  
+  .speed-button.active {
+    background-color: green;
+    color: white;
+  }
+  
+  .change-pattern-button {
+    min-height: 40px;
+    width: 300px;
+    margin-top: 10px;
+    padding: 10px;
+    font-size: 16px;
+    background-color: #007bff;
+    color: white;
+    border: none;
+    border-radius: 5px;
+  }
+  
+  .change-pattern-button:hover {
+    background-color: #0056b3;
+    cursor: pointer;
+  }
+  
+  .centered-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 100vh; /* Adjust if needed */
+  }
+  
