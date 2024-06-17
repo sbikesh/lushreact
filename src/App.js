@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import { MdRefresh } from 'react-icons/md'; // Import reset icon
-import './BlynkControlApp.css'; // Import CSS file for styling
+import { MdRefresh } from 'react-icons/md';
+import './BlynkControlApp.css';
 
 const BlynkControlApp = () => {
   const [currentPattern, setCurrentPattern] = useState("OFF");
@@ -26,9 +26,9 @@ const BlynkControlApp = () => {
       }
     };
 
-    const intervalId = setInterval(fetchData, 100); // Fetch data every 100ms
+    const intervalId = setInterval(fetchData, 100);
 
-    return () => clearInterval(intervalId); // Cleanup interval on component unmount
+    return () => clearInterval(intervalId);
   }, [getApiUrl]);
 
   useEffect(() => {
@@ -53,7 +53,7 @@ const BlynkControlApp = () => {
     
       await axios.get(`${blynkServerAddress}/external/api/update?token=${blynkAuthToken}&pin=V1&value=${nextPattern}`);
       setCurrentPattern(nextPattern);
-      setButtonText(`${nextPattern}`);
+      setButtonText(`Change Pattern (${nextPattern})`);
     } catch (error) {
       console.error('Error changing pattern:', error);
     }
@@ -90,26 +90,26 @@ const BlynkControlApp = () => {
   };
 
   return (
-    <div className="flex flex-col items-center justify-center h-screen">
-      <h1 className="text-4xl font-bold mb-2">Wowlush</h1>
-      <div className="flex items-center mb-8">
-        <h2 className="mr-4 mb-8">Device</h2>
+    <div className="centered-container">
+      <h1 className='text-4xl font-bold mb-4 mt-16'>Wow Lush</h1>
+      <div className="centered-container">
+        <h2>Device Status:</h2>
         <div className={`status-indicator ${isDeviceOnline ? 'online' : 'offline'}`}></div>
       </div>
 
-      <div className="centered-container mb-8">
-        <h2 className="text-2xl font-bold mb-8">Change Pattern</h2>
-        <button disabled={sliderValue !== 0} className="bg-blue-500 text-white px-4 py-2 rounded" onClick={changePattern}>Change Pattern</button>
+      <div className="centered-container">
+        <h2 className='text-2xl font-bold mb-4'>Change Pattern</h2>
+        <button disabled={sliderValue !== 0} className={`bg-blue-500 text-white px-4 w-80 py-2 rounded ${sliderValue !== 0 ? 'button-disabled' : ''}`} onClick={changePattern}>{buttonText}</button>
       </div>
 
-      <div className="centered-container mb-8">
-        <h2 className="text-2xl font-bold mb-8">Select Speed</h2>
+      <div className="centered-container">
+        <h2 className='text-2xl font-bold mb-4'>Select Speed</h2>
         <div className="flex space-x-2">
           {[1, 2, 3, 4, 5].map((value) => (
             <button 
               key={value} 
               disabled={sliderValue !== 0} 
-              className={`px-4 py-2 rounded ${speedMultiplier === value ? 'bg-green-500 text-white' : 'bg-gray-200'}`} 
+              className={`px-4 py-2 rounded ${speedMultiplier === value ? 'bg-green-500 text-white' : 'bg-gray-200'} ${sliderValue !== 0 ? 'button-disabled' : ''}`} 
               onClick={() => handleSpeedMultiplierChange(value)}
             >
               {value}x
@@ -118,8 +118,8 @@ const BlynkControlApp = () => {
         </div>
       </div>
 
-      <div className="centered-container mb-8">
-        <h2 className="text-2xl font-bold mb-8">Manual Control</h2>
+      <div className="centered-container">
+        <h2 className='text-2xl font-bold mb-4'>Manual Control</h2>
         <div className="flex items-center space-x-4">
           <input type="range" min="0" max="1023" value={sliderValue} onChange={handleSliderChange} className="w-80" />
           <button onClick={resetSlider} className="bg-red-500 text-white p-2 rounded">

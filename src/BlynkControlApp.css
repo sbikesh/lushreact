@@ -5,11 +5,11 @@
   }
   
   .online {
-    background-color: green;
+    background-color: rgb(43, 245, 43);
   }
   
   .offline {
-    background-color: red;
+    background-color: rgb(255, 48, 48);
   }
   
   .speed-buttons {
@@ -53,3 +53,7 @@
     height: 100vh; /* Adjust if needed */
   }
   
+  .button-disabled {
+    opacity: 0.37; /* Reduce opacity for disabled look */
+    cursor: not-allowed; /* Change cursor to not-allowed */
+  }
